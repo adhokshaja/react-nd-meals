@@ -3,6 +3,7 @@ import {
     REMOVE_FROM_CALENDAR
 } from '../actions'
 
+import { combineReducers } from 'redux'
 
 const initialCalendarState = {
     sunday: {
@@ -42,15 +43,32 @@ const initialCalendarState = {
     }
 }
 
-const calendar = (state = initialCalendarState, action) => {
-    const { day, recipe, meal } = action;
+
+const food = (state = {}, action) => {
+
     switch (action.type) {
         case ADD_RECIPE:
+            const { recipe } = action;
             return {
                 ...state,
-                [day]: {
-                    ...state[day],
-                    [meal]: recipe.label
+                [recipe.label]: recipe
+            }
+        default:
+            return state;
+    }
+
+}
+
+const calendar = (state = initialCalendarState, action) => {
+    const { day, recipe, meal } = action;
+
+    switch (action.type) {
+        case ADD_RECIPE:
+            return { //Shorthand for Object.assign
+                ...state,
+                [day.toLowerCase()]: {
+                    ...state[day.toLowerCase()],
+                    [meal.toLowerCase()]: recipe.label
                 }
             };
         case REMOVE_FROM_CALENDAR:
@@ -66,4 +84,4 @@ const calendar = (state = initialCalendarState, action) => {
     }
 }
 
-export default calendar;
+export default combineReducers({ food, calendar });
